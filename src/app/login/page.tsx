@@ -1,11 +1,13 @@
+export const dynamic = "force-dynamic";
+
 "use client";
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginInner() {
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [msg, setMsg] = useState("");
@@ -36,47 +38,66 @@ export default function LoginPage() {
   }
 
   return (
+    <main className="min-h-screen bg-gray-50">
+      <section className="max-w-md mx-auto px-6 py-16">
+        <h1 className="text-3xl font-bold text-gray-900">Admin Login</h1>
+        <p className="text-gray-600 mt-2">
+          Enter the admin password to access the dashboard.
+        </p>
+
+        <form
+          onSubmit={onSubmit}
+          className="mt-8 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm"
+        >
+          <label className="text-sm font-medium text-gray-700">Password</label>
+
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mt-2 w-full border border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 rounded-md px-4 py-2 outline-none focus:ring-2 focus:ring-blue-200"
+            placeholder="Enter admin password"
+          />
+
+          {msg && (
+            <div className="mt-4 bg-red-50 text-red-700 border border-red-200 rounded-md px-4 py-3 text-sm">
+              {msg}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={status === "loading"}
+            className="mt-6 w-full bg-blue-600 text-white px-6 py-2.5 rounded-md font-medium hover:bg-blue-700 disabled:opacity-60"
+          >
+            {status === "loading" ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+      </section>
+    </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gray-50">
-        <section className="max-w-md mx-auto px-6 py-16">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Login</h1>
-          <p className="text-gray-600 mt-2">
-            Enter the admin password to access the dashboard.
-          </p>
-
-          <form
-            onSubmit={onSubmit}
-            className="mt-8 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm"
-          >
-            <label className="text-sm font-medium text-gray-700">
-              Password
-            </label>
-
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-2 w-full border border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 rounded-md px-4 py-2 outline-none focus:ring-2 focus:ring-blue-200"
-              placeholder="Enter admin password"
-            />
-
-            {msg && (
-              <div className="mt-4 bg-red-50 text-red-700 border border-red-200 rounded-md px-4 py-3 text-sm">
-                {msg}
+      <Suspense
+        fallback={
+          <main className="min-h-screen bg-gray-50">
+            <section className="max-w-md mx-auto px-6 py-16">
+              <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                <div className="h-6 w-40 bg-gray-100 rounded mb-3" />
+                <div className="h-4 w-64 bg-gray-100 rounded mb-6" />
+                <div className="h-10 w-full bg-gray-100 rounded" />
+                <div className="h-10 w-full bg-gray-100 rounded mt-4" />
               </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="mt-6 w-full bg-blue-600 text-white px-6 py-2.5 rounded-md font-medium hover:bg-blue-700 disabled:opacity-60"
-            >
-              {status === "loading" ? "Signing in..." : "Sign In"}
-            </button>
-          </form>
-        </section>
-      </main>
+            </section>
+          </main>
+        }
+      >
+        <LoginInner />
+      </Suspense>
       <Footer />
     </>
   );
