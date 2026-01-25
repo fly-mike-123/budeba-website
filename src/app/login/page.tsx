@@ -1,11 +1,12 @@
-export const dynamic = "force-dynamic";
-
 "use client";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+
+// Force dynamic runtime for this route
+export const dynamic = "force-dynamic";
 
 function LoginInner() {
   const [password, setPassword] = useState("");
